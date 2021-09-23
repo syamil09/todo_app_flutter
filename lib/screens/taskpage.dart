@@ -17,18 +17,18 @@ class Taskpage extends StatefulWidget {
 
 class _TaskpageState extends State<Taskpage> {
   DatabaseHelper _dbHelper = DatabaseHelper();
-  int? _taskId = 0;
+  int _taskId = 0;
   String? _taskTitle = "";
   String? _taskDescription = "";
 
   FocusNode? _titleFocus;
   FocusNode? _descriptionFocus;
   FocusNode? _todoFocus;
-  bool _contentVisile = false;
+  bool _contentVisible = false;
   @override
   void initState() {
     if (widget.task != null) {
-      _contentVisile = true;
+      _contentVisible = true;
       _taskId = widget.task!.id!;
       _taskTitle = widget.task!.title;
       _taskDescription = widget.task!.description;
@@ -94,14 +94,14 @@ class _TaskpageState extends State<Taskpage> {
                                   _taskId =
                                       await _dbHelper.insertTask(_newTask);
                                   setState(() {
-                                    _contentVisile = true;
+                                    _contentVisible = true;
                                     _taskTitle = value;
                                   });
                                   print(
                                       '=======> new task has been created. <=========');
                                 } else {
                                   await _dbHelper.updateTaskTitle(
-                                      _taskId!, value);
+                                      _taskId, value);
                                   print('=====> data updated <=====');
                                 }
 
@@ -126,7 +126,7 @@ class _TaskpageState extends State<Taskpage> {
                   ),
                   /** Description task **/
                   Visibility(
-                    visible: _contentVisile,
+                    visible: _contentVisible,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 10.0),
                       child: TextField(
@@ -136,7 +136,7 @@ class _TaskpageState extends State<Taskpage> {
                             if (_taskId != 0) {
                               DatabaseHelper _dbHelper = DatabaseHelper();
                               await _dbHelper
-                                  .updateTaskDescription(_taskId!, value)
+                                  .updateTaskDescription(_taskId, value)
                                   .then((value) {
                                 print(
                                     "=======> description of task has been updated <=======");
@@ -158,7 +158,7 @@ class _TaskpageState extends State<Taskpage> {
 
                   /** Add Todo **/
                   Visibility(
-                    visible: _contentVisile,
+                    visible: _contentVisible,
                     child: Column(
                       children: [
                         Padding(
@@ -205,24 +205,20 @@ class _TaskpageState extends State<Taskpage> {
                 bottom: 20,
                 right: 20,
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Taskpage(
-                          task: null,
-                        ),
-                      ),
-                    );
+                  onTap: () async {
+                    if (_taskId != 0) {
+                      await _dbHelper.deleteTask(_taskId);
+                      Navigator.pop(context);
+                    }
                   },
                   child: Container(
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Color(0xFFFE3577),
+                      color: const Color(0xFFFE3577),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Image(
+                    child: const Image(
                         image: AssetImage('assets/images/delete_icon.png')),
                   ),
                 ),

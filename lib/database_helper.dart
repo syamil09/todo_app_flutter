@@ -11,7 +11,7 @@ class DatabaseHelper {
         // Run the CREATE TABLE statement on the database.
         await db.execute(
             'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT)');
-        await db.execute(
+        return await db.execute(
             'CREATE TABLE todos(id INTEGER PRIMARY KEY, taskId INTEGER, title TEXT, isDone INTEGER)');
         // return db;
       },
@@ -53,6 +53,12 @@ class DatabaseHelper {
     Database _db = await database();
     await _db.rawUpdate(
         "UPDATE tasks SET description = '$description' WHERE  id ='$id'");
+  }
+
+  Future<void> deleteTask(int id) async {
+    Database _db = await database();
+    await _db.rawDelete("DELETE FROM tasks WHERE id = '$id'");
+    // await _db.rawDelete("DELETE FROM todos WHERE taskId = '$id'");
   }
 }
 
