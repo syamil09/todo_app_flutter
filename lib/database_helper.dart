@@ -5,15 +5,15 @@ import 'package:todo_app_flutter/models/task.dart';
 
 class DatabaseHelper {
   Future<Database> database() async {
-    WidgetsFlutterBinding.ensureInitialized();
-
     return openDatabase(
       join(await getDatabasesPath(), 'todo_database.db'),
-      onCreate: (db, version) {
+      onCreate: (db, version) async {
         // Run the CREATE TABLE statement on the database.
-        return db.execute(
-          'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
-        );
+        await db.execute(
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT)');
+        await db.execute(
+            'CREATE TABLE todos(id INTEGER PRIMARY KEY, taskId INTEGER, title TEXT, isDone INTEGER)');
+        // return db;
       },
       // Set the version. This executes the onCreate function and provides a
       // path to perform database upgrades and downgrades.
@@ -42,6 +42,11 @@ class DatabaseHelper {
           title: taskMap[index]['title'],
           description: taskMap[index]['description']);
     });
+  }
+
+  Future<void> updateTaskTitle(int id, String title) async {
+    Database _db = await database();
+    await _db.rawUpdate("UPDATE tasks SET title = '$title' WHERE id = '$id' ");
   }
 
   Future<void> updateTaskDescription(int id, String description) async {

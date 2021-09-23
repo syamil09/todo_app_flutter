@@ -16,6 +16,7 @@ class Taskpage extends StatefulWidget {
 }
 
 class _TaskpageState extends State<Taskpage> {
+  DatabaseHelper _dbHelper = DatabaseHelper();
   int? _taskId = 0;
   String? _taskTitle = "";
   String? _taskDescription = "";
@@ -87,11 +88,11 @@ class _TaskpageState extends State<Taskpage> {
                               if (value != '') {
                                 // check if task is null then insert the value
                                 if (widget.task == null) {
-                                  DatabaseHelper _dbHelper = DatabaseHelper();
                                   Task _newTask = Task(
                                     title: value,
                                   );
-                                  // _taskId = await _dbHelper.insertTask(_newTask);
+                                  _taskId =
+                                      await _dbHelper.insertTask(_newTask);
                                   setState(() {
                                     _contentVisile = true;
                                     _taskTitle = value;
@@ -99,6 +100,8 @@ class _TaskpageState extends State<Taskpage> {
                                   print(
                                       '=======> new task has been created. <=========');
                                 } else {
+                                  await _dbHelper.updateTaskTitle(
+                                      _taskId!, value);
                                   print('=====> data updated <=====');
                                 }
 
@@ -132,8 +135,12 @@ class _TaskpageState extends State<Taskpage> {
                           if (value.isNotEmpty) {
                             if (_taskId != 0) {
                               DatabaseHelper _dbHelper = DatabaseHelper();
-                              await _dbHelper.updateTaskDescription(
-                                  _taskId!, value);
+                              await _dbHelper
+                                  .updateTaskDescription(_taskId!, value)
+                                  .then((value) {
+                                print(
+                                    "=======> description of task has been updated <=======");
+                              });
                             }
                           }
                           _todoFocus!.requestFocus();
@@ -148,6 +155,7 @@ class _TaskpageState extends State<Taskpage> {
                       ),
                     ),
                   ),
+
                   /** Add Todo **/
                   Visibility(
                     visible: _contentVisile,

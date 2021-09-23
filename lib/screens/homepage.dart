@@ -76,7 +76,9 @@ class _HomepageState extends State<Homepage> {
                                           task: dataList[index],
                                         ),
                                       ),
-                                    );
+                                    ).then((value) {
+                                      setState(() {});
+                                    });
                                   },
                                   child: TaskCardWidget(
                                     title: dataList[index].title,
